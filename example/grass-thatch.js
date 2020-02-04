@@ -1,10 +1,3 @@
-/*
-  This is a basic example of a plot that could be sent
-  to AxiDraw V3 and similar pen plotters.
-*/
-
-import newArray from 'new-array';
-
 import { PaperSize, Orientation } from 'penplot';
 import { setSeed } from 'penplot/util/random';
 import { polylinesToSVG } from 'penplot/util/svg';
@@ -12,7 +5,7 @@ import { polylinesToSVG } from 'penplot/util/svg';
 setSeed(2);
 
 export const orientation = Orientation.PORTRAIT;
-export const dimensions = PaperSize.SQUARE_POSTER;
+export const dimensions = [15.4, 15.4];
 export const outputImageHeight = 800;
 
 export default function createPlot (context, dimensions) {

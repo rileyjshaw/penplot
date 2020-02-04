@@ -2,7 +2,7 @@ import { Orientation } from 'penplot';
 import { polylinesToSVG } from 'penplot/util/svg';
 
 export const orientation = Orientation.PORTRAIT;
-export const dimensions = [46, 46];
+export const dimensions = [46, 46];  // In cm.
 
 export default function createPlot (context, dimensions) {
   const [ width, height ] = dimensions;
