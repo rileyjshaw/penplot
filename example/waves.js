@@ -1,10 +1,3 @@
-/*
-  This is a basic example of a plot that could be sent
-  to AxiDraw V3 and similar pen plotters.
-*/
-
-import newArray from 'new-array';
-
 import { PaperSize, Orientation } from 'penplot';
 import { setSeed } from 'penplot/util/random';
 import { polylinesToSVG } from 'penplot/util/svg';

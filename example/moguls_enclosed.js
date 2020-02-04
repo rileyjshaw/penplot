@@ -2,13 +2,15 @@ import { Orientation } from 'penplot';
 import { polylinesToSVG } from 'penplot/util/svg';
 
 export const orientation = Orientation.PORTRAIT;
-export const dimensions = [46, 46];  // In cm.
+export const dimensions = [30.48, 30.48];  // In cm.
 
 export default function createPlot (context, dimensions) {
   const [ width, height ] = dimensions;
 
   const lines = [];
   const L = width;
+  const R = L / 2;
+  const INNER_R = R - 0.5;
   const X_0 = width / 2;
   const Y_0 = height / 2;
   const DENSITY = 40;
@@ -21,11 +23,10 @@ export default function createPlot (context, dimensions) {
   const sizeX = c / 4.9;
   const sizeY = sizeX * 3 / 4;
 
-  const {cos, sin, PI} = Math;
+  const {cos, sin, hypot, PI} = Math;
 
-  let x, y;
-  const points = [];
-  for (let θ = 0; θ < max; θ += dθ) {
+  let x, y, points = [], outOfBounds = false;
+  for (let θ = 0, lineLimiter = 0; θ < max; θ += dθ) {
     const xSpiral = cos(θ) * θ / DENSITY;
     const ySpiral = sin(θ) * θ / DENSITY;
     const xx = xSpiral / sizeX;
@@ -33,8 +34,18 @@ export default function createPlot (context, dimensions) {
     const yx = ySpiral / sizeX;
     const yy = ySpiral / sizeY;
     x = xSpiral + cos(xx) * cos(yx) * sin(yx) * (sizeX + sizeY) / 2;
-    y = ySpiral + sin(xy) * cos(xy) * sin(yy - PI / 2 + cos(θ)) * cos(yx) * sizeY;
-    points.push([x + X_0, y + Y_0]);
+	y = ySpiral + sin(xy) * cos(xy) * sin(yy - PI / 2 + cos(θ)) * cos(yx) * sizeY;
+	if (hypot(x, y) < INNER_R) {
+		if (outOfBounds || ++lineLimiter > 1000) {
+			outOfBounds = false;
+			lineLimiter = 0;
+			lines.push(points);
+			points = [];
+		}
+		points.push([x + X_0, y + Y_0]);
+	} else {
+		outOfBounds = true;
+	}
   }
   lines.push(points);
 
@@ -50,7 +61,15 @@ export default function createPlot (context, dimensions) {
       context.beginPath();
       points.forEach(p => context.lineTo(p[0], p[1]));
       context.stroke();
-    });
+	});
+
+	context.beginPath();
+	context.arc(X_0, Y_0, R, 0, PI * 2);
+	context.stroke();
+
+	context.beginPath();
+	context.arc(X_0, Y_0, INNER_R, 0, PI * 2);
+	context.stroke();
   }
 
   function print () {
