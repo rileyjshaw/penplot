@@ -3,7 +3,7 @@ import { polylinesToSVG } from 'penplot/util/svg';
 import { line } from '../lib/geoHelpers';
 
 export const orientation = Orientation.PORTRAIT;
-export const dimensions = [30.48, 30.48];  // In cm.
+export const dimensions = [30, 30];  // Almost a foot, in cm.
 
 export default function createPlot (context, dimensions) {
   const [ width, height ] = dimensions;
@@ -15,8 +15,8 @@ export default function createPlot (context, dimensions) {
   const X_0 = width / 2;
   const Y_0 = height / 2;
   const O = [X_0, Y_0];
-  const DENSITY = 40;
-  const DETAIL = 800;
+  const DENSITY = 69;
+  const DETAIL = 100;
 
   // Derived.
   const c = L / 2;
@@ -99,9 +99,11 @@ export default function createPlot (context, dimensions) {
   }
 
   function print () {
-    return polylinesToSVG(lines, {
-      dimensions
-  }).replace('</svg>', `${circleHack(X_0, Y_0, R)}${circleHack(X_0, Y_0, INNER_R)}</svg>`);  // :)
+    let groupTwo = polylinesToSVG(lines.slice(lines.length / 2), {dimensions});
+    groupTwo = groupTwo.slice(groupTwo.indexOf('<g>'), groupTwo.indexOf('</g>') + 4);
+    return polylinesToSVG(lines.slice(0, lines.length / 2), {dimensions})
+      .replace('</svg>', groupTwo + '</svg>')
+      .replace('</svg>', `${circleHack(X_0, Y_0, R)}${circleHack(X_0, Y_0, INNER_R)}</svg>`);  // :)
   }
 }
 
